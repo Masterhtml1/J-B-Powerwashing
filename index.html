@@ -273,6 +273,30 @@
             padding: 4rem 2rem;
         }
 
+        .section-with-bg {
+            position: relative;
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .section-with-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.92);
+            z-index: 0;
+        }
+
+        .section-with-bg > * {
+            position: relative;
+            z-index: 1;
+        }
+
         .section-title {
             text-align: center;
             font-size: 2.5rem;
@@ -610,6 +634,7 @@
         <div class="hero-background">
             <div class="hero-slide active" style="background-image: url('photo1.png');"></div>
             <div class="hero-slide" style="background-image: url('photo2.png');"></div>
+            <div class="hero-slide" style="background-image: url('photo-bg.png');"></div>
         </div>
         <div class="hero-content">
             <h1>Transform Your Property</h1>
@@ -625,7 +650,7 @@
     </section>
 
     <!-- Services Section -->
-    <section id="services">
+    <section id="services" class="section-with-bg">
         <h2 class="section-title">Our Services</h2>
         <div class="services-grid">
             <div class="service-card">
@@ -655,7 +680,7 @@
     </section>
 
     <!-- Info Section -->
-    <section id="info">
+    <section id="info" class="section-with-bg">
         <div class="info-section">
             <h2 class="section-title" style="color: #667eea;">Important Information</h2>
             
@@ -702,7 +727,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact">
+    <section id="contact" class="section-with-bg">
         <div class="contact-section">
             <h2>Request Your Free Estimate</h2>
             <p style="color: #666; margin-bottom: 2rem;">Fill out the form below and we'll get back to you as soon as possible!</p>
