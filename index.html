@@ -144,23 +144,46 @@
         .hero {
             position: relative;
             height: 600px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            background: #1e3a8a;
         }
 
-        .hero::before {
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-slide::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%231e3a8a" width="1200" height="600"/><circle cx="200" cy="300" r="150" fill="%232563eb" opacity="0.3"/><circle cx="1000" cy="300" r="200" fill="%233b82f6" opacity="0.2"/></svg>');
-            background-size: cover;
-            opacity: 0.5;
+            background: rgba(30, 58, 138, 0.6);
         }
 
         .hero-content {
@@ -176,13 +199,14 @@
             font-size: 4rem;
             margin-bottom: 1rem;
             font-weight: 700;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
         }
 
         .hero-content p {
             font-size: 1.5rem;
             margin-bottom: 0.8rem;
             font-weight: 300;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
         }
 
         .hero-slide-controls {
@@ -211,6 +235,14 @@
         .slide-btn:hover {
             background: white;
             transform: scale(1.1);
+        }
+
+        .slide-btn.pause-btn.paused::before {
+            content: '▶';
+        }
+
+        .slide-btn.pause-btn:not(.paused)::before {
+            content: '⏸';
         }
 
         .cta-button {
@@ -575,6 +607,10 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="hero-slide active" style="background-image: url('photo1.png');"></div>
+            <div class="hero-slide" style="background-image: url('photo2.png');"></div>
+        </div>
         <div class="hero-content">
             <h1>Transform Your Property</h1>
             <p>Professional Power Washing Services</p>
@@ -582,9 +618,9 @@
             <a href="#contact" class="cta-button">Request Free Estimate</a>
         </div>
         <div class="hero-slide-controls">
-            <button class="slide-btn" onclick="return false;">⏸</button>
-            <button class="slide-btn" onclick="return false;">◀</button>
-            <button class="slide-btn" onclick="return false;">▶</button>
+            <button class="slide-btn pause-btn" id="pauseBtn"></button>
+            <button class="slide-btn" id="prevBtn">◀</button>
+            <button class="slide-btn" id="nextBtn">▶</button>
         </div>
     </section>
 
@@ -722,6 +758,75 @@
     </footer>
 
     <script>
+        // Slideshow functionality
+        let currentSlide = 0;
+        let isPlaying = true;
+        let slideInterval;
+        const slides = document.querySelectorAll('.hero-slide');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function startSlideshow() {
+            slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+        }
+
+        function stopSlideshow() {
+            clearInterval(slideInterval);
+        }
+
+        // Pause/Play button
+        pauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                stopSlideshow();
+                pauseBtn.classList.add('paused');
+            } else {
+                startSlideshow();
+                pauseBtn.classList.remove('paused');
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Previous button
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            if (isPlaying) {
+                stopSlideshow();
+                startSlideshow(); // Restart timer
+            }
+        });
+
+        // Next button
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            if (isPlaying) {
+                stopSlideshow();
+                startSlideshow(); // Restart timer
+            }
+        });
+
+        // Start slideshow on page load
+        startSlideshow();
+
         // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
